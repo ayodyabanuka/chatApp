@@ -13,20 +13,21 @@ class chat extends StatefulWidget {
 }
 
 AgoraRtmClient _client;
-final _infoStrings = <dynamic>[];
+final _infoStrings = <String>[];
 String _userName;
 final _peerUserIdController = TextEditingController();
 final _peerMessageController = TextEditingController();
 
-Color colorContainer = Colors.red;
-bool online = false;
+Color colorContainer;
+bool online;
 
 class _chatState extends State<chat> {
   @override
   void initState() {
     super.initState();
     _createClient();
-
+    online = false;
+    colorContainer = Colors.red;
 //Creates the client at the launch
   }
 
@@ -141,6 +142,7 @@ class _chatState extends State<chat> {
     return Row(children: <Widget>[
       new Expanded(
           child: new TextField(
+              enabled: online,
               controller: _peerMessageController,
               decoration: InputDecoration(hintText: 'Enter Message..'))),
       new IconButton(
@@ -154,9 +156,56 @@ class _chatState extends State<chat> {
     return Expanded(
         child: Container(
             child: ListView.builder(
-      itemExtent: 24,
+      itemExtent: 40,
       itemBuilder: (context, i) {
-        return Padding(
+        if (_infoStrings[i] == _userName + ":" + _peerMessageController.text) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                  margin: EdgeInsets.symmetric(vertical: 2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        bottomLeft: Radius.circular(20),
+                        topRight: Radius.circular(20)),
+                    color: Colors.blue,
+                  ),
+                  height: 40,
+                  width: 150,
+                  padding: EdgeInsets.all(10),
+                  child: Text(
+                    _infoStrings[i],
+                    style: TextStyle(color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ))
+            ],
+          );
+        } else {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                  margin: EdgeInsets.symmetric(vertical: 2),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
+                        topRight: Radius.circular(20)),
+                    color: Colors.red,
+                  ),
+                  height: 40,
+                  width: 150,
+                  padding: EdgeInsets.all(10),
+                  child: Text(
+                    _infoStrings[i],
+                    style: TextStyle(color: Colors.white),
+                    textAlign: TextAlign.center,
+                  ))
+            ],
+          );
+        }
+        /**return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 2),
           child: Card(
             child: Padding(
@@ -169,7 +218,7 @@ class _chatState extends State<chat> {
               ),
             ),
           ),
-        );
+        );**/
       },
       itemCount: _infoStrings.length,
     )));
@@ -243,6 +292,7 @@ class _chatState extends State<chat> {
       if (result.toString() == "{" + _peerUserIdController.text + ": true}")
         setState(() {
           colorContainer = Colors.green;
+          online = true;
         });
     } catch (errorCode) {
       _log('Query error: ' + errorCode.toString());
