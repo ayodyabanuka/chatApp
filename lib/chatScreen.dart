@@ -158,7 +158,8 @@ class _chatState extends State<chat> {
             child: ListView.builder(
       itemExtent: 40,
       itemBuilder: (context, i) {
-        if (_infoStrings[i] == _userName + ":" + _peerMessageController.text) {
+        print(_infoStrings[i].substring(0, _userName.length));
+        if (_infoStrings[i].substring(0, _userName.length) == _userName) {
           return Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
