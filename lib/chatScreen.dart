@@ -18,6 +18,9 @@ String _userName;
 final _peerUserIdController = TextEditingController();
 final _peerMessageController = TextEditingController();
 
+Color colorContainer = Colors.red;
+bool online = false;
+
 class _chatState extends State<chat> {
   @override
   void initState() {
@@ -118,6 +121,15 @@ class _chatState extends State<chat> {
       new OutlinedButton(
         child: Text('Check Online', style: textStyle),
         onPressed: _toggleQuery,
+      ),
+      SizedBox(
+        width: 10,
+      ),
+      Container(
+        width: 10,
+        height: 10,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(50), color: colorContainer),
       )
     ]);
   }
@@ -226,7 +238,12 @@ class _chatState extends State<chat> {
     try {
       Map<dynamic, dynamic> result =
           await _client.queryPeersOnlineStatus([peerUid]);
-      _log('Query result: ' + result.toString());
+
+      //_log('Query result: ' + result.toString());
+      if (result.toString() == "{" + _peerUserIdController.text + ": true}")
+        setState(() {
+          colorContainer = Colors.green;
+        });
     } catch (errorCode) {
       _log('Query error: ' + errorCode.toString());
     }
