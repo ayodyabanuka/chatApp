@@ -70,9 +70,9 @@ class _chatState extends State<chat> {
 
   //'5bba0ffad3fc4cb5ae0448840dc90d27'
   _createClient() async {
+    _client = widget.client1;
     _client.onMessageReceived = (AgoraRtmMessage message, String peerId) {
-      _log("Peer msg: " + peerId + ", msg: " + message.text, Colors.red,
-          CrossAxisAlignment.start);
+      _log(peerId + " : " + message.text);
       Container(
         color: Colors.red,
         child: Text(message.text),
@@ -80,16 +80,17 @@ class _chatState extends State<chat> {
       print(peerId);
     };
     _client.onConnectionStateChanged = (int state, int reason) {
-      _log(
-          'Connection state changed: ' +
+      Fluttertoast.showToast(
+          msg: 'Connection state changed: ' +
               state.toString() +
               ', reason: ' +
               reason.toString(),
-          Colors.black,
-          CrossAxisAlignment.center);
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.BOTTOM);
+
       if (state == 5) {
         _client.logout();
-        _log('Logout.', Colors.black, CrossAxisAlignment.center);
+        _log('Logout.');
         setState(() {
           _isLogin = false;
         });
@@ -225,11 +226,9 @@ class _chatState extends State<chat> {
     try {
       Map<dynamic, dynamic> result =
           await _client.queryPeersOnlineStatus([peerUid]);
-      _log('Query result: ' + result.toString(), Colors.black,
-          CrossAxisAlignment.center);
+      _log('Query result: ' + result.toString());
     } catch (errorCode) {
-      _log('Query error: ' + errorCode.toString(), Colors.black,
-          CrossAxisAlignment.center);
+      _log('Query error: ' + errorCode.toString());
     }
   }
 
@@ -254,7 +253,7 @@ class _chatState extends State<chat> {
 
     try {
       AgoraRtmMessage message = AgoraRtmMessage.fromText(text);
-      _log(message.text, Colors.blue, CrossAxisAlignment.end);
+      _log(_userName + ":" + message.text);
       Container(
         color: Colors.blue,
         child: Text(message.text),
@@ -273,8 +272,7 @@ class _chatState extends State<chat> {
     }
   }
 
-  void _log(
-      String info, Color color, CrossAxisAlignment crossAxisAlignmenttext) {
+  void _log(String info) {
     print(info);
     setState(() {
       _infoStrings.insert(_infoStrings.length, info);
