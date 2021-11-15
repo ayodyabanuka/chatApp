@@ -227,22 +227,30 @@ class _chatState extends State<chat> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Container(
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            bottomLeft: Radius.circular(20),
-                            bottomRight: Radius.circular(20)),
-                        color: Color(0xFF000983),
-                      ),
-                      height: 40,
-                      width: 150,
-                      padding: EdgeInsets.all(10),
+                    margin: EdgeInsets.symmetric(vertical: 2),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          bottomLeft: Radius.circular(20),
+                          bottomRight: Radius.circular(20)),
+                      color: Color(0xFF000983),
+                    ),
+                    height: 40,
+                    width: 150,
+                    padding: EdgeInsets.all(10),
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10),
                       child: Text(
-                        _infoStrings[i],
+                        _infoStrings[i].substring(
+                          _userName.length + 1,
+                        ),
                         style: TextStyle(color: Colors.white),
+                        maxLines: 10,
                         textAlign: TextAlign.center,
-                      ))
+                      ),
+                    ),
+                    alignment: Alignment.centerRight,
+                  )
                 ],
               ),
               Text(
@@ -260,22 +268,30 @@ class _chatState extends State<chat> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(20),
-                            bottomRight: Radius.circular(20),
-                            topRight: Radius.circular(20)),
-                        color: Color(0xFFDDDDDD),
-                      ),
-                      height: 40,
-                      width: 150,
-                      padding: EdgeInsets.all(10),
+                    margin: EdgeInsets.symmetric(vertical: 2),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(20),
+                          bottomRight: Radius.circular(20),
+                          topRight: Radius.circular(20)),
+                      color: Color(0xFFDDDDDD),
+                    ),
+                    height: 40,
+                    width: 150,
+                    padding: EdgeInsets.all(10),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10),
                       child: Text(
-                        _infoStrings[i],
+                        _infoStrings[i].substring(
+                          _peerUser.length + 2,
+                        ),
                         style: TextStyle(color: Colors.black),
+                        maxLines: 10,
                         textAlign: TextAlign.center,
-                      ))
+                      ),
+                    ),
+                    alignment: Alignment.centerLeft,
+                  )
                 ],
               ),
               Text(
