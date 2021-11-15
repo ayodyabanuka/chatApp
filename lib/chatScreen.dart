@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:agora_rtm/agora_rtm.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:principal_club_app/Login.dart';
+import 'package:intl/intl.dart';
 
 class chat extends StatefulWidget {
   String username;
@@ -14,6 +17,7 @@ class chat extends StatefulWidget {
 
 AgoraRtmClient _client;
 final _infoStrings = <String>[];
+String _peerUser = "ab";
 String _userName;
 final _peerUserIdController = TextEditingController();
 final _peerMessageController = TextEditingController();
@@ -21,11 +25,16 @@ final _peerMessageController = TextEditingController();
 Color colorContainer;
 bool online;
 
+String _timeString;
+
 class _chatState extends State<chat> {
   @override
   void initState() {
     super.initState();
     _createClient();
+    _toggleQuery();
+    _timeString = _formatDateTime(DateTime.now());
+    _getTime();
     online = false;
     colorContainer = Colors.red;
 //Creates the client at the launch
@@ -41,16 +50,45 @@ class _chatState extends State<chat> {
     _client = widget.client1;
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.blue,
-          leading: Container(),
-          title: Text("Chat"),
-          leadingWidth: 0,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Image.asset("assets/Icons/back.png")),
+          title: Row(
+            children: [
+              Text(
+                'Chat',
+                style: TextStyle(
+                    color: Color(0xff000983),
+                    fontSize: 25,
+                    fontFamily: 'DM Serif Text',
+                    fontWeight: FontWeight.w500),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              Container(
+                width: 10,
+                height: 10,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50),
+                    color: colorContainer),
+              )
+            ],
+          ),
           actions: [
             IconButton(
-                onPressed: () {
-                  _toggleLogin();
-                },
-                icon: Icon(Icons.logout))
+                iconSize: 30,
+                onPressed: () {},
+                icon: Image.asset('assets/Icons/notification.png')),
+            SizedBox(
+              child: IconButton(
+                  onPressed: () {},
+                  icon: Image.asset('assets/Icons/drawer.png')),
+            )
           ],
         ),
         body: Padding(
@@ -58,7 +96,7 @@ class _chatState extends State<chat> {
           child: Column(
             children: [
               //_buildLogin(),
-              _buildQueryOnlineStatus(),
+
               SizedBox(
                 height: 10,
               ),
@@ -139,70 +177,112 @@ class _chatState extends State<chat> {
     if (!_isLogin) {
       return Container();
     }
-    return Row(children: <Widget>[
-      new Expanded(
-          child: new TextField(
-              enabled: online,
-              controller: _peerMessageController,
-              decoration: InputDecoration(hintText: 'Enter Message..'))),
-      new IconButton(
-        icon: Icon(Icons.send),
-        onPressed: _toggleSendPeerMessage,
-      )
-    ]);
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(50),
+          boxShadow: [
+            BoxShadow(
+              color: Color(0x23000983),
+              blurRadius: 10,
+              offset: const Offset(0, 0),
+            ),
+          ],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.only(left: 20),
+          child: Row(children: <Widget>[
+            new Expanded(
+                child: new TextField(
+                    enabled: true,
+                    controller: _peerMessageController,
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Enter Message..'))),
+            new IconButton(
+                icon: Image.asset(
+                  'assets/Icons/chatsend.png',
+                ),
+                onPressed: _toggleSendPeerMessage)
+          ]),
+        ),
+      ),
+    );
   }
 
   Widget _buildInfoList() {
     return Expanded(
         child: Container(
             child: ListView.builder(
-      itemExtent: 40,
+      itemExtent: 65,
       itemBuilder: (context, i) {
         print(_infoStrings[i].substring(0, _userName.length));
         if (_infoStrings[i].substring(0, _userName.length) == _userName) {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Container(
-                  margin: EdgeInsets.symmetric(vertical: 2),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        bottomLeft: Radius.circular(20),
-                        topRight: Radius.circular(20)),
-                    color: Colors.blue,
-                  ),
-                  height: 40,
-                  width: 150,
-                  padding: EdgeInsets.all(10),
-                  child: Text(
-                    _infoStrings[i],
-                    style: TextStyle(color: Colors.white),
-                    textAlign: TextAlign.center,
-                  ))
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
+                      margin: EdgeInsets.symmetric(vertical: 2),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            bottomLeft: Radius.circular(20),
+                            bottomRight: Radius.circular(20)),
+                        color: Color(0xFF000983),
+                      ),
+                      height: 40,
+                      width: 150,
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        _infoStrings[i],
+                        style: TextStyle(color: Colors.white),
+                        textAlign: TextAlign.center,
+                      ))
+                ],
+              ),
+              Text(
+                _timeString,
+                style: TextStyle(
+                    fontSize: 12, color: Colors.black, fontFamily: "poppins"),
+              ),
             ],
           );
         } else {
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                  margin: EdgeInsets.symmetric(vertical: 2),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        bottomRight: Radius.circular(20),
-                        topRight: Radius.circular(20)),
-                    color: Colors.red,
-                  ),
-                  height: 40,
-                  width: 150,
-                  padding: EdgeInsets.all(10),
-                  child: Text(
-                    _infoStrings[i],
-                    style: TextStyle(color: Colors.white),
-                    textAlign: TextAlign.center,
-                  ))
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                      margin: EdgeInsets.symmetric(vertical: 2),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                            bottomLeft: Radius.circular(20),
+                            bottomRight: Radius.circular(20),
+                            topRight: Radius.circular(20)),
+                        color: Color(0xFFDDDDDD),
+                      ),
+                      height: 40,
+                      width: 150,
+                      padding: EdgeInsets.all(10),
+                      child: Text(
+                        _infoStrings[i],
+                        style: TextStyle(color: Colors.black),
+                        textAlign: TextAlign.center,
+                      ))
+                ],
+              ),
+              Text(
+                _timeString,
+                style: TextStyle(
+                    fontSize: 12, color: Colors.black, fontFamily: "poppins"),
+              ),
             ],
           );
         }
@@ -277,7 +357,7 @@ class _chatState extends State<chat> {
   }
 
   void _toggleQuery() async {
-    String peerUid = _peerUserIdController.text;
+    String peerUid = _peerUser;
     if (peerUid.isEmpty) {
       Fluttertoast.showToast(
           msg: 'Please input peer user id to query.',
@@ -301,7 +381,7 @@ class _chatState extends State<chat> {
   }
 
   void _toggleSendPeerMessage() async {
-    String peerUid = _peerUserIdController.text;
+    String peerUid = _peerUser;
     if (peerUid.isEmpty) {
       Fluttertoast.showToast(
           msg: 'Please input peer user id to send message.',
@@ -322,6 +402,7 @@ class _chatState extends State<chat> {
     try {
       AgoraRtmMessage message = AgoraRtmMessage.fromText(text);
       _log(_userName + ":" + message.text);
+
       Container(
         color: Colors.blue,
         child: Text(message.text),
@@ -345,5 +426,17 @@ class _chatState extends State<chat> {
     setState(() {
       _infoStrings.insert(_infoStrings.length, info);
     });
+  }
+
+  void _getTime() {
+    final DateTime now = DateTime.now();
+    final String formattedDateTime = _formatDateTime(now);
+    setState(() {
+      _timeString = formattedDateTime;
+    });
+  }
+
+  String _formatDateTime(DateTime dateTime) {
+    return DateFormat.jm().format(dateTime);
   }
 }

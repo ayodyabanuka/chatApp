@@ -23,6 +23,8 @@ class _loginState extends State<login> {
     _createClient();
   }
 
+  String _peerUser = "ab";
+
   static TextStyle textStyle = TextStyle(fontSize: 18, color: Colors.blue);
   @override
   Widget build(BuildContext context) {
